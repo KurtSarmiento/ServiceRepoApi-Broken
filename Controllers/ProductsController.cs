@@ -10,18 +10,18 @@ namespace ServiceRepoApi.Controllers;
 public class ProductsController : ControllerBase
 {
     private readonly IProductService _productService;
-    private readonly AppDbContext _context;
+    //private readonly AppDbContext _context;
 
-    public ProductsController(IProductService productService, AppDbContext context)
+    public ProductsController(IProductService productService)
     {
         _productService = productService;
-        _context = context;
+        //_context = context;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<Product>>> GetAll()
     {
-        var products = await _context.Products.ToListAsync();
+        var products = await _productService.GetAllAsync();
         return Ok(products);
     }
 

@@ -38,4 +38,14 @@ public class ProductService : IProductService
         await _repository.SaveChangesAsync();
         return ServiceResult.Ok();
     }
+
+    public async Task<ServiceResult> DeleteAsync(int id)
+    {
+        var existing = await _repository.GetByIdAsync(id);
+        if (existing is null)
+            return ServiceResult.NotFound($"Product with ID {id} not found.");
+        _repository.Delete(existing);
+        await _repository.SaveChangesAsync();
+        return ServiceResult.Ok();
+    }
 }
