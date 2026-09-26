@@ -12,12 +12,18 @@ public class ProductService : IProductService
         _repository = repository;
     }
 
-    public Task<IEnumerable<Product>> GetAllAsync() => _repository.GetAllAsync();
+    public async Task<IEnumerable<Product>> GetAllAsync()
+    {
+        return await _repository.GetAllAsync();
+    }
+    
 
     public Task<Product?> GetByIdAsync(int id) => _repository.GetByIdAsync(id);
 
     public async Task<ServiceResult> CreateAsync(Product product)
     {
+        product.Name = product.Name.Trim();
+        product.CreatedAt = DateTime.Now;
         await _repository.AddAsync(product);
         await _repository.SaveChangesAsync();
         return ServiceResult.Ok();
@@ -32,7 +38,7 @@ public class ProductService : IProductService
         existing.Name = product.Name.Trim();
         existing.Price = product.Price;
         existing.Stock = product.Stock;
-        existing.CreatedAt = product.CreatedAt;
+        //existing.CreatedAt = product.CreatedAt;
 
         _repository.Update(existing);
         await _repository.SaveChangesAsync();

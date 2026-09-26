@@ -35,11 +35,12 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Product>> Create(Product product)
     {
-        if (await _context.Products.AnyAsync(p => p.Name == product.Name))
+        var products = await _productService.GetAllAsync();
+        if (products.Any(p => p.Name == product.Name))
             return Conflict(new { error = $"A product named '{product.Name}' already exists." });
 
-        product.Name = product.Name.Trim();
-        product.CreatedAt = DateTime.Now;
+        //product.Name = product.Name.Trim();
+        //product.CreatedAt = DateTime.Now;
 
         var result = await _productService.CreateAsync(product);
         if (!result.Success) return ToErrorResult(result);
@@ -59,15 +60,11 @@ public class ProductsController : ControllerBase
     [HttpDelete]
     public async Task<IActionResult> Delete(int id)
     {
-        var product = await _context.Products.FindAsync(id);
-        if (product is null) return NotFound();
-
-        if (product.Stock == 0)
-            return Conflict(new { error = "Cannot delete a product that still has stock." });
-
-        _context.Products.Remove(product);
-        await _context.SaveChangesAsync();
-        return NoContent();
+        var result = await _productService.DeleteAsync(id);
+        if (!result.Success) return ToErrorResult(result);
+        
+        //await _context.SaveChangesAsync();
+        //return NoContent();
     }
 
     private ActionResult ToErrorResult(ServiceResult result) => result.Status switch
